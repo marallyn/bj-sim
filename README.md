@@ -62,7 +62,7 @@ simulator.
 -   When splitting aces, you are supposed to only get one card per hand. This
     sim allows you to do whatever you wish with your hands after splitting them.
 
--   Comments are missing (func documentation). I didn't read the golang
+-   Comments are missing (func documentation). I didn't read the Go
     recommendation for commenting functions, types, and interfaces, and all the
     code I saw in the docs was comment-less. So I left out documentation for
     now. Code comments exist though.
