@@ -21,7 +21,7 @@ func GetArgs() (int, int, int) {
 func showHelp() {
 	fmt.Println("\nbj, it's not what you think, it's a blackjack simulator")
 	fmt.Println("    Usage:")
-	fmt.Println("        bj <number of decks> <number of players> <number of hands>\n")
+	fmt.Println("        bj <# of decks> <# of players> <# of hands> [quiet]\n")
 }
 
 func VerifyArgs() {

@@ -7,15 +7,12 @@ type IDealer interface {
 
 type Dealer struct {
 	BasePlayer
+	Hand
 }
 
 func (dealer *Dealer) GetUpCard() string {
 	return dealer.cards[0].GetShortFullName()
 }
-
-// func (dealer *Dealer) GetUpCardValue() int {
-// 	return dealer.cards[0].GetValue()
-// }
 
 func (dealer *Dealer) GetUpCardValue() int {
 	return dealer.cards[0].GetValue()

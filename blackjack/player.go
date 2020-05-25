@@ -9,36 +9,32 @@ type IPlayer interface {
 	GetBet() int
 	Lose()
 	Push()
-	Status(handsPlayed int)
+	Status()
 	Win(factor float64)
 }
 
 type Player struct {
 	BasePlayer
 	chips  float64
-	bet    int
 	pushes int
 	losses int
 	wins   int
+	hands  []Hand
 }
 
 // this is inherited from IBasePlayer, but we override, because we have chips to set
 func (p *Player) Init(name string) {
 	p.BasePlayer.Init(name)
-	p.chips = 0
 }
 
 func (p *Player) Bet() {
-	p.bet = 1
+	// this is called from game.playersBet before dealing, so the player only has one hand
+	p.hands[0].Bet()
 }
 
-func (p *Player) DoubleBet() {
-	p.bet *= 2
-}
-
-func (p *Player) GetAction(upCard int) string {
+func (p *Player) GetAction(hand Hand, upCard int) string {
 	action := ""
-	hardValue, softValue := p.GetValues()
+	hardValue, softValue := hand.GetValues()
 
 	if upCard == 1 {
 		upCard = 11
@@ -51,6 +47,10 @@ func (p *Player) GetAction(upCard int) string {
 	}
 
 	return action
+}
+
+func (p *Player) GetHand(index int) *Hand {
+	return &p.hands[index]
 }
 
 func (p *Player) getHardAction(upCard int, hardValue int) string {
@@ -109,43 +109,32 @@ func (p *Player) getSoftAction(upCard int, softValue int) string {
 	return action
 }
 
-func (p *Player) GetBet() int {
-	return p.bet
+func (p *Player) GetBet(hand Hand) int {
+	return hand.GetBet()
 }
 
-// this is inherited from IBasePlayer, but we override, because we want to show our bet size
-// func (p *Player) HandStatus() {
-// 	fmt.Printf(
-// 		"%s: bet=%d, cards=%s, value=%s, action=%s\n",
-// 		p.name,
-// 		p.bet,
-// 		p.GetCardStr(),
-// 		p.getValueStr(),
-// 		p.GetAction(),
-// 	)
-// }
-
-func (p *Player) ResetHand() {
-	p.BasePlayer.ResetHand()
-	p.bet = 0
+func (p *Player) ResetHands() {
+	// start fresh with one hand
+	p.hands = make([]Hand, 1)
 }
 
-func (p *Player) Status(handsPlayed int) {
+func (p *Player) Status() {
 	winPct := 0.0
 	losePct := 0.0
 	pushPct := 0.0
 	bjPct := 0.0
-	if handsPlayed > 0 {
-		winPct = float64(p.wins) / float64(handsPlayed) * 100
-		losePct = float64(p.losses) / float64(handsPlayed) * 100
-		pushPct = float64(p.pushes) / float64(handsPlayed) * 100
-		bjPct = float64(p.bjs) / float64(handsPlayed) * 100
+	if p.handsPlayed > 0 {
+		winPct = float64(p.wins) / float64(p.handsPlayed) * 100
+		losePct = float64(p.losses) / float64(p.handsPlayed) * 100
+		pushPct = float64(p.pushes) / float64(p.handsPlayed) * 100
+		bjPct = float64(p.bjs) / float64(p.handsPlayed) * 100
 	}
 
 	fmt.Printf(
-		"    %s: %d chips. W%%: %0.2f L%%: %0.2f P%%: %0.2f BJ%%: %0.2f\n",
+		"    %s: %d chips %d hands W%%: %0.2f L%%: %0.2f P%%: %0.2f BJ%%: %0.2f\n",
 		p.name,
 		int(p.chips),
+		p.handsPlayed,
 		winPct,
 		losePct,
 		pushPct,
@@ -153,21 +142,19 @@ func (p *Player) Status(handsPlayed int) {
 	)
 }
 
-// func (p *Player) Bj() {
-// 	p.chips += float64(p.bet)
-// 	p.wins += 1
-// }
-
-func (p *Player) Lose() {
-	p.chips -= float64(p.bet)
+func (p *Player) Lose(hand Hand) {
+	p.chips -= float64(hand.GetBet())
 	p.losses += 1
+	p.handsPlayed += 1
 }
 
 func (p *Player) Push() {
 	p.pushes += 1
+	p.handsPlayed += 1
 }
 
-func (p *Player) Win(factor float64) {
-	p.chips += float64(p.bet) * factor
+func (p *Player) Win(hand Hand, factor float64) {
+	p.chips += float64(hand.GetBet()) * factor
 	p.wins += 1
+	p.handsPlayed += 1
 }
