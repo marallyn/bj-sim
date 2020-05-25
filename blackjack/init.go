@@ -6,16 +6,15 @@ import (
 	"strconv"
 )
 
-func GetQuiet() bool {
-	return len(os.Args) > 4
-}
-
-func GetArgs() (int, int, int) {
+func GetArgs() (int, int, int, bool) {
 	numDecks, _ := strconv.Atoi(os.Args[1])
 	numPlayers, _ := strconv.Atoi(os.Args[2])
 	numHands, _ := strconv.Atoi(os.Args[3])
 
-	return numDecks, numPlayers, numHands
+	// the quiet arg ca be anything, it just has to exist
+	quiet := len(os.Args) > 4
+
+	return numDecks, numPlayers, numHands, quiet
 }
 
 func showHelp() {
@@ -25,12 +24,13 @@ func showHelp() {
 }
 
 func VerifyArgs() {
+	// if we have less than the three required arguments, get out
 	if len(os.Args) < 4 {
 		showHelp()
 		os.Exit(1)
 	}
 
-	d, p, h := GetArgs()
+	d, p, h, _ := GetArgs()
 
 	if d <= 0 || p <= 0 || h <= 0 {
 		showHelp()

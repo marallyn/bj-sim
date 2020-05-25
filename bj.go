@@ -6,8 +6,7 @@ func main() {
 	// make sure we were invoked correctly
 	blackjack.VerifyArgs()
 
-	numDecks, numPlayers, numHands := blackjack.GetArgs()
-	quiet := blackjack.GetQuiet()
+	numDecks, numPlayers, numHands, quiet := blackjack.GetArgs()
 
 	game := blackjack.NewGame(numDecks, numPlayers, numHands, quiet)
 	// game.Test()

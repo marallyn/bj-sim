@@ -121,8 +121,10 @@ func (game *Game) playersAct() {
 
 	for p := range game.players {
 		player := &game.players[p]
-		for h := range player.hands {
-			hand := &player.hands[h]
+		processing := true
+		handIndex := 0
+		for processing {
+			hand := &player.hands[handIndex]
 			action := "start"
 			for action != "stand" {
 				if !game.quiet {
@@ -142,12 +144,24 @@ func (game *Game) playersAct() {
 						fmt.Printf("%s takes another card...\n", player.GetName())
 					}
 					hand.ReceiveCard(game.deck.DealCard())
+				case action == "split":
+					if !game.quiet {
+						fmt.Printf("%s creates a new hand out of thin air!\n", player.GetName())
+					}
+					hand = player.Split(hand, handIndex)
 				case action == "stand":
 					if !game.quiet {
 						fmt.Printf("%s says I'm good here.\n", player.GetName())
 					} //end if
 				} // end switch
 			} //end for not stand
+
+			// this hand is done, move on
+			handIndex++
+			if handIndex >= len(player.hands) {
+				// no more hands for this player
+				processing = false
+			}
 		} //end for hand in range
 	} //end for player in range
 }

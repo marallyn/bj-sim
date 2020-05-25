@@ -40,9 +40,13 @@ func (p *Player) GetAction(hand Hand, upCard int) string {
 		upCard = 11
 	}
 
-	if hardValue == softValue {
+	switch {
+	case len(hand.cards) == 2 && hand.cards[0].GetShortName() == hand.cards[1].GetShortName():
+		// there are two cards, and their short names are the same, so it's a pair
+		action = p.getPairAction(upCard, hand.cards[0].GetShortName())
+	case hardValue == softValue:
 		action = p.getHardAction(upCard, hardValue)
-	} else {
+	default:
 		action = p.getSoftAction(upCard, softValue)
 	}
 
@@ -61,15 +65,15 @@ func (p *Player) getHardAction(upCard int, hardValue int) string {
 		action = "hit"
 	case hardValue == 9 && (upCard < 3 || upCard > 5):
 		action = "hit"
-	case hardValue == 9 && (upCard >= 3 && upCard <= 5):
+	case hardValue == 9:
 		action = "double"
 	case hardValue == 10 && upCard > 9:
 		action = "hit"
-	case hardValue == 10 && upCard <= 9:
+	case hardValue == 10:
 		action = "double"
 	case hardValue == 11 && upCard > 10:
 		action = "hit"
-	case hardValue == 11 && upCard <= 10:
+	case hardValue == 11:
 		action = "double"
 	case hardValue == 12 && (upCard < 4 || upCard > 6):
 		action = "hit"
@@ -82,11 +86,50 @@ func (p *Player) getHardAction(upCard int, hardValue int) string {
 	return action
 }
 
+func (p *Player) getPairAction(upCard int, cardName string) string {
+	action := ""
+
+	switch {
+	case cardName == "A":
+		action = "split"
+	case (cardName == "2" || cardName == "3") && upCard < 8:
+		action = "split"
+	case cardName == "2" || cardName == "3":
+		action = "hit"
+	case cardName == "3" && (upCard >= 3 && upCard <= 5):
+		action = "double"
+	case cardName == "4" && (upCard == 5 || upCard == 6):
+		action = "split"
+	case cardName == "4":
+		action = "hit"
+	case cardName == "5" && upCard <= 9:
+		action = "double"
+	case cardName == "5":
+		action = "hit"
+	case cardName == "6" && upCard < 7:
+		action = "split"
+	case cardName == "6":
+		action = "hit"
+	case cardName == "7" && upCard < 8:
+		action = "split"
+	case cardName == "7":
+		action = "hit"
+	case cardName == "8":
+		action = "split"
+	case cardName == "9" && (upCard < 7 || upCard == 8 || upCard == 9):
+		action = "split"
+	default:
+		action = "stand"
+	}
+
+	return action
+}
+
 func (p *Player) getSoftAction(upCard int, softValue int) string {
 	action := ""
 
 	switch {
-	case softValue == 12:
+	case softValue <= 12:
 		action = "hit"
 	case (softValue == 13 || softValue == 14) && (upCard == 5 || upCard == 6):
 		action = "double"
@@ -116,6 +159,24 @@ func (p *Player) GetBet(hand Hand) int {
 func (p *Player) ResetHands() {
 	// start fresh with one hand
 	p.hands = make([]Hand, 1)
+}
+
+func (p *Player) Split(hand *Hand, handIndex int) *Hand {
+	newHand := Hand{
+		cards: make([]Card, 0),
+		bet: hand.GetBet(),
+	}
+
+	// move the second card from the first hand to the newHand
+	newHand.cards = append(newHand.cards, hand.cards[1])
+
+	// remove the second card from the first hand
+	hand.cards = hand.cards[0:1]
+
+	// add the newHand to the player's hand
+	p.hands = append(p.hands, newHand)
+
+	return &p.hands[handIndex]
 }
 
 func (p *Player) Status() {
