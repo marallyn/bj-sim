@@ -21,13 +21,14 @@ type Player struct {
 	pushes      int
 	bjs         int
 	hands       []Hand
-	// strategy Strategy
+	Strategy
 }
 
 // this is inherited from IBasePlayer, but we override, because we have chips to set
-func (p *Player) Init(name string, chips float64) {
+func (p *Player) Init(name string, chips float64, strategyName string) {
 	p.name = name
 	p.chips = chips
+	p.Strategy.Init(strategyName)
 }
 
 func (p *Player) Bet() {
@@ -39,132 +40,16 @@ func (p *Player) Bj() {
 	p.bjs += 1
 }
 
-func (p *Player) GetAction(hand Hand, upCard int) string {
-	action := ""
-	hardValue, softValue := hand.GetValues()
-
-	if upCard == 1 {
-		upCard = 11
-	}
-
-	switch {
-	case len(hand.cards) == 2 && hand.cards[0].GetShortName() == hand.cards[1].GetShortName():
-		// there are two cards, and their short names are the same, so it's a pair
-		action = p.getPairAction(upCard, hand.cards[0].GetShortName())
-	case hardValue == softValue:
-		action = p.getHardAction(upCard, hardValue)
-	default:
-		action = p.getSoftAction(upCard, softValue)
-	}
-
-	return action
-}
-
 func (p *Player) GetHand(index int) *Hand {
 	return &p.hands[index]
 }
 
-func (p *Player) getHardAction(upCard int, hardValue int) string {
-	action := ""
-
-	switch {
-	case hardValue < 9:
-		action = "hit"
-	case hardValue == 9 && (upCard < 3 || upCard > 5):
-		action = "hit"
-	case hardValue == 9:
-		action = "double"
-	case hardValue == 10 && upCard > 9:
-		action = "hit"
-	case hardValue == 10:
-		action = "double"
-	case hardValue == 11 && upCard > 10:
-		action = "hit"
-	case hardValue == 11:
-		action = "double"
-	case hardValue == 12 && (upCard < 4 || upCard > 6):
-		action = "hit"
-	case (hardValue >= 13 && hardValue <= 16) && upCard > 6:
-		action = "hit"
-	default:
-		action = "stand"
-	}
-
-	return action
+func (p *Player) GetBet(hand Hand) int {
+	return hand.GetBet()
 }
 
 func (p *Player) GetName() string {
 	return p.name
-}
-
-func (p *Player) getPairAction(upCard int, cardName string) string {
-	action := ""
-
-	switch {
-	case cardName == "A":
-		action = "split"
-	case (cardName == "2" || cardName == "3") && upCard < 8:
-		action = "split"
-	case cardName == "2" || cardName == "3":
-		action = "hit"
-	case cardName == "3" && (upCard >= 3 && upCard <= 5):
-		action = "double"
-	case cardName == "4" && (upCard == 5 || upCard == 6):
-		action = "split"
-	case cardName == "4":
-		action = "hit"
-	case cardName == "5" && upCard <= 9:
-		action = "double"
-	case cardName == "5":
-		action = "hit"
-	case cardName == "6" && upCard < 7:
-		action = "split"
-	case cardName == "6":
-		action = "hit"
-	case cardName == "7" && upCard < 8:
-		action = "split"
-	case cardName == "7":
-		action = "hit"
-	case cardName == "8":
-		action = "split"
-	case cardName == "9" && (upCard < 7 || upCard == 8 || upCard == 9):
-		action = "split"
-	default:
-		action = "stand"
-	}
-
-	return action
-}
-
-func (p *Player) getSoftAction(upCard int, softValue int) string {
-	action := ""
-
-	switch {
-	case softValue <= 12:
-		action = "hit"
-	case (softValue == 13 || softValue == 14) && (upCard == 5 || upCard == 6):
-		action = "double"
-	case (softValue == 13 || softValue == 14):
-		action = "hit"
-	case (softValue == 15 || softValue == 16) && (upCard > 3 && upCard < 7):
-		action = "double"
-	case (softValue == 15 || softValue == 16):
-		action = "hit"
-	case (softValue == 17 || softValue == 18) && (upCard > 2 && upCard < 7):
-		action = "double"
-	case softValue == 17:
-		action = "hit"
-	case softValue == 18 && upCard > 8:
-		action = "hit"
-	default:
-		action = "stand"
-	}
-
-	return action
-}
-
-func (p *Player) GetBet(hand Hand) int {
-	return hand.GetBet()
 }
 
 func (p *Player) ResetHands() {
@@ -203,7 +88,7 @@ func (p *Player) Status() {
 	}
 
 	fmt.Printf(
-		"    %s: %d chips %d hands W%%: %0.2f L%%: %0.2f P%%: %0.2f BJ%%: %0.2f\n",
+		"    %10s: %6d chips %d hands W%%: %5.2f L%%: %5.2f P%%: %5.2f BJ%%: %5.2f\n",
 		p.name,
 		int(p.chips),
 		p.handsPlayed,

@@ -42,11 +42,13 @@ func NewGame(args Args) Game {
 		newPlayer := Player{}
 		name := "Player " + strconv.Itoa(i+1)
 		chips := float64(0)
+		strategy := "basic"
 		if i < numArgsPlayers {
 			name = args.Players[i].Name
 			chips = args.Players[i].Chips
+			strategy = args.Players[i].Strategy
 		}
-		newPlayer.Init(name, chips)
+		newPlayer.Init(name, chips, strategy)
 		game.players = append(game.players, newPlayer)
 	}
 

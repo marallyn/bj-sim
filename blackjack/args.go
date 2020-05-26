@@ -23,7 +23,7 @@ type Args struct {
 type ArgPlayer struct {
 	Name  string  `json:"name"`
 	Chips float64 `json:"chips"`
-	// Strategy Strategy
+	Strategy string `json:"strategy"`
 }
 
 var setupObj Args

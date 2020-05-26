@@ -1,40 +1,58 @@
 {
     "numDecks": 1,
-    "numPlayers": 5,
-    "numHands": 100000,
-    "quiet": true,
+    "numPlayers": 7,
+    "numHands": 10,
+    "quiet": false,
     "players": [
         {
             "name": "Gus",
-            "chips": 0
+            "chips": 0,
+            "strategy": "basic"
         },
         {
             "name": "Hattie",
-            "chips": 0
+            "chips": 0,
+            "strategy": "basic"
         },
         {
             "name": "Lilly",
-            "chips": 0
+            "chips": 0,
+            "strategy": "basic"
         },
         {
             "name": "Winston",
-            "chips": 0
+            "chips": 0,
+            "strategy": "basic"
         },
         {
             "name": "Ellanor",
-            "chips": 0
+            "chips": 0,
+            "strategy": "basic"
         },
         {
             "name": "Tonka",
-            "chips": 0
+            "chips": 0,
+            "strategy": "basic"
         },
         {
             "name": "Kage",
-            "chips": 0
+            "chips": 0,
+            "strategy": "basic"
         },
         {
             "name": "Bo",
-            "chips": 0
+            "chips": 0,
+            "strategy": "basic"
+        },
+        {
+            "name": "Lulu",
+            "chips": 0,
+            "strategy": "basic"
+        },
+        {
+            "name": "Mei Mei",
+            "chips": 0,
+            "strategy": "basic"
         }
     ]
 }
