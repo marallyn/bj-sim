@@ -1,0 +1,40 @@
+{
+    "numDecks": 1,
+    "numPlayers": 5,
+    "numHands": 100000,
+    "quiet": true,
+    "players": [
+        {
+            "name": "Gus",
+            "chips": 0
+        },
+        {
+            "name": "Hattie",
+            "chips": 0
+        },
+        {
+            "name": "Lilly",
+            "chips": 0
+        },
+        {
+            "name": "Winston",
+            "chips": 0
+        },
+        {
+            "name": "Ellanor",
+            "chips": 0
+        },
+        {
+            "name": "Tonka",
+            "chips": 0
+        },
+        {
+            "name": "Kage",
+            "chips": 0
+        },
+        {
+            "name": "Bo",
+            "chips": 0
+        }
+    ]
+}

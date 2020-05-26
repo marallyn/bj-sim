@@ -43,9 +43,24 @@ Clone the repo and run:
 
 ## Usage
 
+You can invoke the simulator by specifying the three required parameters on the
+command line:
+
 ```
     bj <# of decks> <# of players> <# of hands> [quiet]
 ```
+
+or you can specify a setup file:
+
+```
+    bj <setup file>
+```
+
+In the setup file you can specify the three required parameters as well as names
+and starting chip values for your players. In the near future you can define the
+strategy for the player so you can test different strategies at the same time.
+
+A sample setup.json file is included.
 
 When not in quiet mode, the output is quite noisy, so if you are going to
 simulate millions of hands, use quiet.
@@ -70,9 +85,10 @@ simulator.
 ### Results
 
 Using probabilities, you can calculate the chance of being dealt a blackjack as
-about 4.83%. Running the simulator for about a million hands, the observed
-chances of getting a blackjack are about 4.79%. Not sure what to attribute the
-difference to, but it is kind of close.
+about 4.83%. Running the simulator for fifty million hands, the observed chances
+of getting a blackjack are about 5.03%. This went up from 4.79% after I
+implemented splits. My guess is this will go done when I correctly account for
+split aces.
 
 I didn't really look at expected win, loss and push percentages, so not sure how
 close those are to expectations either.

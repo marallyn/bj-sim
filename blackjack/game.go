@@ -16,25 +16,37 @@ type Game struct {
 	players     []Player
 }
 
-func NewGame(decks int, players int, hands int, quiet bool) Game {
-	if !quiet {
-		fmt.Printf("Starting a %d deck game with %d players for %d hands\n", decks, players, hands)
+func NewGame(args Args) Game {
+	if !args.Quiet {
+		fmt.Printf(
+			"Starting a %d deck game with %d players for %d hands\n",
+			args.NumDecks,
+			args.NumPlayers,
+			args.NumHands,
+		)
 	}
 	game := Game{
-		numDecks:   decks,
-		numPlayers: players,
-		numHands:   hands,
-		quiet:      quiet,
+		numDecks:   args.NumDecks,
+		numPlayers: args.NumPlayers,
+		numHands:   args.NumHands,
+		quiet:      args.Quiet,
 	}
-	game.deck.Init(decks)
+	game.deck.Init(game.numDecks)
 
-	// Init the dealer
-	game.dealer.Init("Dealer")
+	// // Init the dealer
+	// game.dealer.Init("Dealer")
 
 	// Init the players
+	numArgsPlayers := len(args.Players)
 	for i := 0; i < game.numPlayers; i++ {
 		newPlayer := Player{}
-		newPlayer.Init("Player " + strconv.Itoa(i+1))
+		name := "Player " + strconv.Itoa(i+1)
+		chips := float64(0)
+		if i < numArgsPlayers {
+			name = args.Players[i].Name
+			chips = args.Players[i].Chips
+		}
+		newPlayer.Init(name, chips)
 		game.players = append(game.players, newPlayer)
 	}
 

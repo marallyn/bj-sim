@@ -6,7 +6,6 @@ type IDealer interface {
 }
 
 type Dealer struct {
-	BasePlayer
 	Hand
 }
 

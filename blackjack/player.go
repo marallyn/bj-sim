@@ -3,7 +3,6 @@ package blackjack
 import "fmt"
 
 type IPlayer interface {
-	IBasePlayer
 	Bet()
 	DoubleBet()
 	GetBet() int
@@ -14,22 +13,30 @@ type IPlayer interface {
 }
 
 type Player struct {
-	BasePlayer
-	chips  float64
-	pushes int
-	losses int
-	wins   int
-	hands  []Hand
+	name        string
+	chips       float64
+	handsPlayed int
+	wins        int
+	losses      int
+	pushes      int
+	bjs         int
+	hands       []Hand
+	// strategy Strategy
 }
 
 // this is inherited from IBasePlayer, but we override, because we have chips to set
-func (p *Player) Init(name string) {
-	p.BasePlayer.Init(name)
+func (p *Player) Init(name string, chips float64) {
+	p.name = name
+	p.chips = chips
 }
 
 func (p *Player) Bet() {
 	// this is called from game.playersBet before dealing, so the player only has one hand
 	p.hands[0].Bet()
+}
+
+func (p *Player) Bj() {
+	p.bjs += 1
 }
 
 func (p *Player) GetAction(hand Hand, upCard int) string {
@@ -84,6 +91,10 @@ func (p *Player) getHardAction(upCard int, hardValue int) string {
 	}
 
 	return action
+}
+
+func (p *Player) GetName() string {
+	return p.name
 }
 
 func (p *Player) getPairAction(upCard int, cardName string) string {
@@ -164,7 +175,7 @@ func (p *Player) ResetHands() {
 func (p *Player) Split(hand *Hand, handIndex int) *Hand {
 	newHand := Hand{
 		cards: make([]Card, 0),
-		bet: hand.GetBet(),
+		bet:   hand.GetBet(),
 	}
 
 	// move the second card from the first hand to the newHand
