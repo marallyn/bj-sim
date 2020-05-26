@@ -33,20 +33,25 @@ func NewGame(args Args) Game {
 	}
 	game.deck.Init(game.numDecks)
 
-	// // Init the dealer
-	// game.dealer.Init("Dealer")
-
 	// Init the players
 	numArgsPlayers := len(args.Players)
 	for i := 0; i < game.numPlayers; i++ {
 		newPlayer := Player{}
+		// set the default values for the player
 		name := "Player " + strconv.Itoa(i+1)
 		chips := float64(0)
 		strategy := "basic"
 		if i < numArgsPlayers {
-			name = args.Players[i].Name
-			chips = args.Players[i].Chips
-			strategy = args.Players[i].Strategy
+			// use the values supplied in the setup.json
+			if args.Players[i].Name != "" {
+				name = args.Players[i].Name
+			}
+			if args.Players[i].Chips != 0.0 {
+				chips = args.Players[i].Chips
+			}
+			if args.Players[i].Strategy != "" {
+				strategy = args.Players[i].Strategy
+			}
 		}
 		newPlayer.Init(name, chips, strategy)
 		game.players = append(game.players, newPlayer)
@@ -78,13 +83,7 @@ func (game *Game) Run() {
 		game.resolveBets()
 		game.playerStatus(false)
 	}
-	fmt.Println("Final simulation stats:")
-	fmt.Println("  Simulation parameters:")
-	fmt.Printf("    Number of decks: %d\n", game.numDecks)
-	fmt.Printf("    Number of players: %d\n", game.numPlayers)
-	fmt.Printf("    Number of hands: %d\n", game.numHands)
-	fmt.Println("  Player stats:")
-	game.playerStatus(true)
+	game.results()
 }
 
 func (game *Game) deal() {
@@ -187,12 +186,22 @@ func (game *Game) playersBet() {
 	}
 }
 
-func (game *Game) playerStatus(loud bool) {
+func (game *Game) playerStatus(loud bool) Stats {
+	totalStats := Stats{}
+
 	if loud || !game.quiet {
 		for _, player := range game.players {
-			player.Status()
+			playerStats := player.ShowStats()
+			totalStats.chips += playerStats.chips
+			totalStats.handsPlayed += playerStats.handsPlayed
+			totalStats.wins += playerStats.wins
+			totalStats.losses += playerStats.losses
+			totalStats.pushes += playerStats.pushes
+			totalStats.bjs += playerStats.bjs
 		}
 	}
+
+	return totalStats
 }
 
 func (game *Game) resetHands() {
@@ -244,6 +253,35 @@ func (game *Game) resolveBets() {
 			} // end switch
 		} // end for hand in range
 	} // end for player in range
+}
+
+func (game *Game) results() {
+	fmt.Println("Final simulation stats:")
+	fmt.Println("  Simulation parameters:")
+	fmt.Printf("    Number of decks: %d\n", game.numDecks)
+	fmt.Printf("    Number of players: %d\n", game.numPlayers)
+	fmt.Printf("    Number of hands: %d\n", game.numHands)
+
+	fmt.Println("  Player stats:")
+	totalStats := game.playerStatus(true)
+
+	fmt.Println("  Simulation stats:")
+	winPct := float64(totalStats.wins) / float64(totalStats.handsPlayed) * 100
+	losePct := float64(totalStats.losses) / float64(totalStats.handsPlayed) * 100
+	pushPct := float64(totalStats.pushes) / float64(totalStats.handsPlayed) * 100
+	bjPct := float64(totalStats.bjs) / float64(totalStats.handsPlayed) * 100
+
+	fmt.Printf(
+		"    %10s: %6d chips %d hands W%%: %5.2f L%%: %5.2f P%%: %5.2f BJ%%: %5.2f\n",
+		"Totals",
+		int(totalStats.chips),
+		totalStats.handsPlayed,
+		winPct,
+		losePct,
+		pushPct,
+		bjPct,
+	)
+
 }
 
 func (game *Game) showHandResultBj(hand Hand, player Player) {
