@@ -56,9 +56,10 @@ or you can specify a setup file:
     bj <setup file>
 ```
 
-In the setup file you can specify the three required parameters as well as names
-and starting chip values for your players. In the near future you can define the
-strategy for the player so you can test different strategies at the same time.
+In the setup file you can specify the three required parameters as well as
+names, starting chip values and strategies for your players. Each player can
+have a different strategy, so you can test different strategies at the same
+time.
 
 A sample setup.json file is included.
 
@@ -70,14 +71,14 @@ simulate millions of hands, use quiet.
 The ./strategies directory holds the strategy files. At this point, there is
 only st-basic.json. Using st-basic.json as a template, you can create your own
 strategies for testing. A player can specify which strategy they are using in
-the setup.json file, by adding a
+the setup.json file, by adding
 
 ```
-    "strategy": "name"
+    "strategy": "strategy-name"
 ```
 
-key/value to there configuration. The simulator looks for your strategy file in
-the strategies directory and prefixes the strategy name with "st-" and adds
+to their configuration. The simulator looks for your strategy file in the
+./strategies directory and prefixes the strategy name with "st-" and adds
 ".json" as the extension.
 
 Strategy files use abbreviations for actions:
@@ -95,6 +96,11 @@ A strategy consists of a name and three different maps:
     - pair: The pair map is indexed by the value of the first card in the player's hand.
     - soft: The soft map is indexed by the softValue of the player's hand minus 11
 
+The simulator chooses which map to used based on the situation. It tries to use
+the pair map first (hand must be only two cards and have match ShortNames), then
+it chooses the soft map if there is an ace in the hand, otherwise it chooses the
+hard map.
+
 The second index of all strategy maps is the value of the dealer up card
 starting with 2, and going through 11, for a total of ten actions per hand
 index.
@@ -107,10 +113,10 @@ simulator.
 -   When splitting aces, you are supposed to only get one card per hand. This
     sim allows you to do whatever you wish with your hands after splitting them.
 
--   Comments are missing (func documentation). I didn't read the Go
-    recommendation for commenting functions, types, and interfaces, and all the
-    code I saw in the docs was comment-less. So I left out documentation for
-    now. Code comments exist though.
+-   func documentation is missing. I didn't read the Go recommendation for
+    documenting functions, types, and interfaces, and all the code I saw in the
+    docs was comment-less, so I left out documentation for now. Code comments
+    exist though.
 
 ### Results
 
