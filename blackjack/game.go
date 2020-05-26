@@ -226,14 +226,19 @@ func (game *Game) resolveBets() {
 			playerHasNatural := hand.CheckForNatural()
 			switch {
 			case dealerHasNatural && playerHasNatural:
-				// player has blackjack, dealer doesn't
+				// player and dealer have blackjack
 				player.Bj()
 				player.Push()
 				game.showHandResultBjPush(hand, *player)
 			case !dealerHasNatural && playerHasNatural:
 				// player has blackjack, dealer doesn't
-				player.Bj()
-				player.Win(hand, 1.5)
+				if len(player.hands) == 1 {
+					// it's only a blackjack if we didn't get there by splitting aces
+					player.Bj()
+					player.Win(hand, 1.5)
+				} else {
+					player.Win(hand, 1)
+				}
 				game.showHandResultBj(hand, *player)
 			case (dealerValue > 21 && playerValue <= 21) ||
 				(dealerValue <= 21 && playerValue <= 21 && playerValue > dealerValue):

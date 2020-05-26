@@ -1,33 +1,32 @@
 {
     "numDecks": 1,
     "numPlayers": 7,
-    "numHands": 10,
-    "quiet": false,
+    "numHands": 1000000,
+    "quiet": true,
     "players": [
         {
             "name": "Gus",
-            "chips": 0,
             "strategy": "basic"
         },
         {
             "name": "Hattie",
             "chips": 0,
-            "strategy": "basic"
+            "strategy": "no-split"
         },
         {
             "name": "Lilly",
             "chips": 0,
-            "strategy": "basic"
+            "strategy": "no-double"
         },
         {
             "name": "Winston",
             "chips": 0,
-            "strategy": "basic"
+            "strategy": "no-split-no-double"
         },
         {
             "name": "Ellanor",
             "chips": 0,
-            "strategy": "basic"
+            "strategy": "hit-higher"
         },
         {
             "name": "Tonka",

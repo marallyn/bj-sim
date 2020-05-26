@@ -53,7 +53,7 @@ func (s *Stats) ShowStats(name string, strategyName string) {
 
 	playerAndStrategyNames := name + " (" + strategyName + ")"
 	fmt.Printf(
-		"    %15s: %6d chips %d hands W%%: %5.2f L%%: %5.2f P%%: %5.2f BJ%%: %5.2f\n",
+		"    %20s: %6d chips %d hands W%%: %5.2f L%%: %5.2f P%%: %5.2f BJ%%: %5.2f\n",
 		playerAndStrategyNames,
 		int(s.chips),
 		s.handsPlayed,

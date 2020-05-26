@@ -47,7 +47,7 @@ func (s *Strategy) GetAction(hand Hand, upCard int) string {
 
 	switch {
 	// handle some special cases, so we don't break the strategy tables
-	case hardValue < 5:
+	case len(hand.cards) < 2:
 		// this happens when we split a hand, and only have one card
 		action = "h"
 	case softValue >= 21:
