@@ -65,14 +65,44 @@ A sample setup.json file is included.
 When not in quiet mode, the output is quite noisy, so if you are going to
 simulate millions of hands, use quiet.
 
+## Strategy files
+
+The ./strategies directory holds the strategy files. At this point, there is
+only st-basic.json. Using st-basic.json as a template, you can create your own
+strategies for testing. A player can specify which strategy they are using in
+the setup.json file, by adding a
+
+```
+    "strategy": "name"
+```
+
+key/value to there configuration. The simulator looks for your strategy file in
+the strategies directory and prefixes the strategy name with "st-" and adds
+".json" as the extension.
+
+Strategy files use abbreviations for actions:
+
+```
+    d = double
+    h = hit
+    s = stand
+    v = split
+```
+
+A strategy consists of a name and three different maps:
+
+    - hard: The hard map is indexed by the hardValue of the player's hand.
+    - pair: The pair map is indexed by the value of the first card in the player's hand.
+    - soft: The soft map is indexed by the softValue of the player's hand minus 11
+
+The second index of all strategy maps is the value of the dealer up card
+starting with 2, and going through 11, for a total of ten actions per hand
+index.
+
 ### Limitations
 
 This was just for fun to get familiar with go, so it is not a full fledged
 simulator.
-
--   Stategy is hard coded. The dealer strategy and player strategies are
-    constant and embedded in the code. The plan before shelving this project is
-    to learn a bit about io and maps by reading strategies from files.
 
 -   When splitting aces, you are supposed to only get one card per hand. This
     sim allows you to do whatever you wish with your hands after splitting them.
